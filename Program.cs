@@ -9,7 +9,14 @@ namespace XKCD {
         static string JunkTweets = "https://twitter.com/junk_us";
         static Process process = new Process ();
 
-        static TwitterClient client = new TwitterClient (conKey, consumerKeySecret, accessToken, accessTokenSecret);
+
+        // PLACE API KEYS HERE
+        static string conKey = "";
+        static string conKeySecret = "";
+        static string accToken = "";
+        static string accTokenSecret = "";
+
+        static TwitterClient client = new TwitterClient (conKey, conKeySecret, accToken, accTokenSecret);
 
         #endregion
 
