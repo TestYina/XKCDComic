@@ -1,10 +1,13 @@
-// abstract class
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace XKCD {
+    /// <summary>
+    /// The main abstract comic class.
+    /// Contains basic and necessary information for all comics.
+    /// </summary>
     public abstract class Comic {
 
         protected Comic (string setURL) {
@@ -22,18 +25,33 @@ namespace XKCD {
         public abstract void SetBaseComic ();
 
     }
-
+    
+    /// <summary>
+    /// Data structure for each comic and information
+    /// </summary>
     public abstract class Content {
         public Dictionary<string, object> ComDetails { get; set; }
     }
 
+    /// <summary>
+    /// Class to store JSON properties per comic
+    /// </summary>
+    /// <remarks>
+    /// Also if we need to have something to unify them in the JSON
+    /// </remarks>
     public abstract class ComDetails {
-        // For JSON properties per comic
-        // Also if we need to have something to unify them in the JSON
+       
     }
 
-    // Ideally we might need to have our own converter with specific formats and to also handle null values
-    // Luckily XKCD comics are pretty straightforward - leaving this commented out in case it should need to be built out
+    
+    /// <summary>
+    /// Specialized JsonConverter for specific formats
+    /// </summary>
+    /// <remarks>
+    /// For this example, XKCD comics are straightforward and this did not need to be implemented
+    /// inserting in case we will need to.
+    /// </remarks>
+    
     /*  public class DetailedComicConverter : JsonConverter {
             public override object ReadJson (JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
                throw new JsonSerializationException ("Unexpected format in DetailedComicConverter: " + token.ToString ());
