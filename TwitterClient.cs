@@ -13,6 +13,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
+/// <summary>
+/// The <c>Twitter Client</c> class
+/// Contains all methods for handling posts to Twitter
+/// </summary>
 namespace XKCD {
     public class TwitterClient {
 
@@ -29,6 +33,10 @@ namespace XKCD {
         string tempDirectory;
         string _errorMessage;
 
+        /// <summary>
+        /// Constructor that takes in API keys
+        /// Sets security hash
+        /// </summary>
         public TwitterClient (string consumerKey, string consumerKeySecret, string accessToken, string accessTokenSecret, int limit = 280) {
             _TwitterTextAPI = "https://api.twitter.com/1.1/statuses/update.json";
             _TwitterImageAPI = "https://upload.twitter.com/1.1/media/upload.json";
@@ -42,8 +50,11 @@ namespace XKCD {
             _sigHasher = new HMACSHA1 (new ASCIIEncoding ().GetBytes ($"{_consumerKeySecret}&{_accessTokenSecret}"));
         }
 
-        // create post to twitter by breaking up the image and the text post
-        // since we need to upload the image to twitter first
+        /// <summary>
+        /// Creates post to twitter by breaking up the post by image and text
+        /// </summary>
+        /// <param name="post">text portion/param>
+        /// <param name="imageUri">image uri to be downloaded</param>           
         public string PostTweet (string post, string imageUri) {
             try {
                 // first, download the image into a temp folder
@@ -80,14 +91,18 @@ namespace XKCD {
             }
         }
 
-        // check if success code 200
+        /// <summary>
+        /// Checks for success code in HTTPResponse
+        /// </summary>
         void CheckErrorCode (Task<Tuple<int, string>> resultTask, JObject resultJson) {
             if (resultTask.Result.Item1 != 200) {
                 _errorMessage += $"Error uploading image portion to Twitter: {resultJson.Value<String>()}  \n";
             }
         }
 
-        // tweet with image
+        /// <summary>
+        /// Prepares text and image for posting along with destination endpoint
+        /// </summary>
         public Task<Tuple<int, string>> TweetText (string text, string mediaID) {
             var textData = new Dictionary<string, string> { { "status", text },
                     { "trim_user", "1" },
@@ -97,7 +112,9 @@ namespace XKCD {
             return SendText (_TwitterTextAPI, textData);
         }
 
-        // upload image to twitter
+        /// <summary>
+        /// Upload initial image to twitter
+        /// </summary>
         public Task<Tuple<int, string>> TweetImage (string pathToImage) {
             byte[] imgdata = System.IO.File.ReadAllBytes (pathToImage);
             var imageContent = new ByteArrayContent (imgdata);
@@ -109,6 +126,12 @@ namespace XKCD {
             return SendImage (_TwitterImageAPI, multipartContent);
         }
 
+        /// <summary>
+        /// Sends text with image information to Twitter
+        /// </summary>
+        /// <returns> 
+        /// Status code and response
+        /// </returns>
         async Task<Tuple<int, string>> SendText (string URL, Dictionary<string, string> textData) {
             using (var httpClient = new HttpClient ()) {
                 httpClient.DefaultRequestHeaders.Add ("Authorization", PrepareOAuth (URL, textData));
@@ -123,6 +146,12 @@ namespace XKCD {
             }
         }
 
+        /// <summary>
+        /// Sends image information to Twitter
+        /// </summary>
+        /// <returns> 
+        /// Status code and response
+        /// </returns>
         async Task<Tuple<int, string>> SendImage (string URL, MultipartFormDataContent multipartContent) {
             using (var httpClient = new HttpClient ()) {
                 httpClient.DefaultRequestHeaders.Add ("Authorization", PrepareOAuth (URL, null));
@@ -138,6 +167,12 @@ namespace XKCD {
         }
 
         #region Helper Functions
+        /// <summary>
+        /// Shortens text to twitter character limit
+        /// </summary>
+        /// <returns> 
+        /// Shortened text
+        /// </returns>
         string MatchTextLimit (string text) {
             while (text.Length >= _limit) {
                 text = text.Substring (0, text.LastIndexOf (" "));
@@ -146,6 +181,12 @@ namespace XKCD {
             return text;
         }
 
+        /// <summary>
+        /// Creates temporary image directory for all images needed to download
+        /// </summary>
+        /// <returns> 
+        /// Image paths from comic
+        /// </returns>
         string GetImagePath (string imageUri) {
             try {
                 // check if tempDirectory was already made
@@ -171,6 +212,9 @@ namespace XKCD {
             }
         }
 
+        /// <summary>
+        /// Deletes temp folder created for this exercise
+        /// </summary>
         public void DeleteImagePath () {
             try {
                 // there may be permission errors
