@@ -5,10 +5,17 @@ using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
 
+/// <summary>
+/// Specific XKDC Comic class
+/// Inherits from Comic abstract class
+/// </summary>
 namespace XKCD {
     public class XKCDComic : Comic {
 
-        // Constructor
+        /// <summary>
+        /// Constructor
+        /// Sets base url to XKCD json current comic
+        /// </summary>
         public XKCDComic () : base ("http://xkcd.com/info.0.json") {
             SetBaseComic ();
         }
@@ -30,17 +37,32 @@ namespace XKCD {
         XKCDContent RandomComicContent;
         #endregion
 
+        /// <summary>
+        /// Generates random comic
+        /// Number is determined from current comics's issue number
+        /// </summary>
+        /// <remarks>
+        /// We could have stored the random comics in a cache
+        /// </remarks>
         public override void GenerateRandComic () {
             Random rnd = new Random ();
             ModJSONurl = DefaultJSON.Insert (15, "/" + rnd.Next (MaxNum).ToString ());
             RandomComicContent = GenerateComic (ModJSONurl);
         }
 
+        /// <summary>
+        /// Sets the current comic as the standard comic
+        /// Also sets properties based off of it
+        /// </summary>
         public override void SetBaseComic () {
             BaseContent = GenerateComic (DefaultJSON);
             MaxNum = Convert.ToInt32 (BaseContent.XKCDComDetails["num"]);
         }
 
+        /// <summary>
+        /// Deserialize json information on a comic
+        /// Place information into ComDetails
+        /// </summary>
         XKCDContent GenerateComic (string originalJson) {
             try {
                 using (WebClient wc = new WebClient ()) {
@@ -59,8 +81,9 @@ namespace XKCD {
 
         }
 
-        // XKCD specific function
-        // just scrambling the text
+        /// <summary>
+        /// Scrambles the text from alt text 
+        /// </summary>
         public static string ScrambleSentence (string sentence) {
             var random = new Random ();
             return string.Join (" ", sentence.Split (' ').OrderBy (x => random.Next ()).ToArray ());
@@ -73,6 +96,13 @@ namespace XKCD {
 
     }
 
+    /// <summary>
+    /// Specific XKDC ComDetails class
+    /// Inherits from ComDetails abstract class
+    /// </summary>
+    /// <remarks>
+    /// Luckily XKCD comics are structured the same so these can be listed directly
+    /// </remarks>
     class XKCDComDetails : ComDetails {
         [JsonProperty ("month")]
         string Month { get; set; }
