@@ -1,7 +1,11 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Threading;
 
+/// <summary>
+/// The main class.
+/// Console application.
+/// </summary>
 namespace XKCD {
     class Program {
 
@@ -20,11 +24,15 @@ namespace XKCD {
 
         #endregion
 
+        /// <summary>
+        /// The main <c>Main</c> method
+        /// Contains all methods for performing basic math functions
+        /// </summary>
         static void Main (string[] args) {
             try {
                 do {
                     var com = new XKCDComic ();
-                    openTwitter ();
+                    OpenTwitter ();
                     Console.WriteLine ("Press enter to spam my Twitter with an out of context comic \n\t\tor press 'zz' to exit.");
 
                     while (Console.ReadKey (true).Key == ConsoleKey.Enter) {
@@ -38,14 +46,17 @@ namespace XKCD {
                     }
 
                     // clean up
-                    closeTwitter (client);
+                    CloseTwitter (client);
                 } while (Console.ReadKey (true).Key != ConsoleKey.Z);
             } catch (Exception e) {
                 PrintErrorMessage (e.ToString ());
             }
         }
 
-        public static void openTwitter () {
+        /// <summary>
+        /// Opens a new chrome window for Twitter - junk_us
+        /// </summary>
+        public static void OpenTwitter () {
             try {
                 Console.WriteLine ("Opening the best twitter of all time. I hope you have chrome!");
                 process.StartInfo.FileName = Environment.GetEnvironmentVariable ("ProgramFiles(x86)") + "\\Google\\Chrome\\Application\\chrome.exe";
@@ -56,14 +67,20 @@ namespace XKCD {
             }
         }
 
-        // clean up processes and memory
-        public static void closeTwitter (TwitterClient client) {
+        /// <summary>
+        /// Cleans up process-specific properties
+        /// Deletes path created for downloaded images
+        /// </summary>
+        public static void CloseTwitter (TwitterClient client) {
             process.CloseMainWindow ();
             process.Close ();
             client.DeleteImagePath ();
         }
 
-        // highlight errors from expecting Console Print
+        /// <summary>
+        /// Customizes console messages to differentiate between expected and errors
+        /// Highlights error messages with red background and white text
+        /// </summary>
         public static void PrintErrorMessage (string message) {
             Console.BackgroundColor = ConsoleColor.Red;
             Console.ForegroundColor = ConsoleColor.White;
